@@ -1,3 +1,4 @@
-curvebarrier
-curvebarrierreversed
-__pycache__
+curvebarrier/
+curvebarrierreversed/
+__pycache__/
+*.git
