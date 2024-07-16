@@ -6,7 +6,9 @@ from genomedefineradv import *
 import pickle
 #Basic one cell movement plotted outputs
 size    = 128
-savename = "curvebarrier/curvenewver02200"
+time_steps = 192
+spawnboundaries = [103,0,size-1,size-1]#topleft,then btm right [103,0,size-1,size-1]
+savename = "curvebarrier/curvenewver0high185"
 def cellmove(x,y,uniquecell,timestep):#CELLMOVE CANNOT BE MOVED TO GENOME BECAUSE COLLISION NOT DEFINED THERE
     
     changex = 0
@@ -88,11 +90,11 @@ for mappcounter in range(128):#represents line counter
 with open(savename, "rb") as f:
     celllist = pickle.load(f)
     for i in celllist:
-        possiblex = random.randint(103,size-1)
-        possibley = random.randint(0,size-1)
+        possiblex = random.randint(spawnboundaries[0],spawnboundaries[2])
+        possibley = random.randint(spawnboundaries[1],spawnboundaries[3])
         while not collision[possibley][possiblex] == 0:
-            possiblex = random.randint(103,size-1)
-            possibley = random.randint(0,size-1)
+            possiblex = random.randint(spawnboundaries[0],spawnboundaries[2])
+            possibley = random.randint(spawnboundaries[1],spawnboundaries[3])
         collision[possibley][possiblex] = i[2]
         i[0] = possiblex
         i[1] = possibley
@@ -109,7 +111,7 @@ ylist = []
 clist = []
 xlist,ylist,clist = listtocoord(celllist)
 #STARTING PLOTTING PART
-time_steps = 130
+
 fig, ax = plt.subplots()
 marker_size = 3 #up this to make points more visible
 tigger = 1

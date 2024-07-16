@@ -14,9 +14,10 @@ from torch import FloatTensor,matmul,randn,Tensor
 
 #0123 are move nsew respectively or at least try to
 #while  4 is random
+
 class cell():
     inputs =14
-    internal = 5
+    internal = 20
     outputs = 5
     def __init__(self, name, colour):
         self.inputointe = randn(cell.inputs,cell.internal)
