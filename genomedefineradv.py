@@ -17,7 +17,7 @@ from torch import FloatTensor,matmul,randn,Tensor
 
 class cell():
     inputs =14
-    internal = 5
+    internal = 20
     outputs = 5
     def __init__(self, name, colour):
         self.inputointe = randn(cell.inputs,cell.internal)

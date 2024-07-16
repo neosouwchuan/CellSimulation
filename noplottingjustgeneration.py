@@ -9,7 +9,12 @@ filesavename = "curvebarrier/curvenewver0"#the map file must have at least one e
 barriername = "curvebarrier.map"
 version = 0
 loadfromfile = False
-time_steps = 128
+time_steps = 192
+size = 128
+numberCells = 300
+survivedQueue = 100
+chanceFresh = .1
+spawnboundaries = [103,0,size-1,size-1]#topleft,then btm right [103,0,size-1,size-1]
 def printoutcollision(collision):
     for i in collision:
         for j in i:
@@ -21,11 +26,12 @@ def printoutcollision(collision):
 #Basic one cell movement plotted outputs
 def survivalCondition(celllist,collision):
     survived = []
-    for i in range(len(celllist)):
+    for i in range(len(celllist)):  
         collision[celllist[i][1]][celllist[i][0]] = 0
         if(celllist[i][0]<25):# and (celllist[i][1]<64):
             survived.append(celllist[i][2])
-size = 128
+    return survived
+
 def cellmove(x,y,uniquecell,timestep):#CELLMOVE CANNOT BE MOVED TO GENOME BECAUSE COLLISION NOT DEFINED THERE
     
     changex = 0
@@ -95,28 +101,28 @@ for mappcounter in range(128):
     collision.append(copy.copy(mappreadline))
 mapp.close()
 #THIS PART ENDS MAKING
+
 if loadfromfile:#LOAD INSTEAD OF GENERATE
     with open(filesavename + str(version), "rb") as f:
         celllist = pickle.load(f)
-        for i in range(len(celllist)):
-            #Remember collision is y then x
-            #celllist[i][1] is y position
-            collision[celllist[i][1]][celllist[i][0]] = celllist[i][2]
 else:
-    for i in range(300):#generate cells
+    cellist = []
+    for i in range(numberCells):#generate cells
         color = "%06x" % random.randint(0, 0xFFFFFF)
         newcell = cell(idcounter,"#"+color)
-        possiblex = random.randint(103,size-1)
-        possibley = random.randint(0,size-1)
-        while not collision[possibley][possiblex] == 0:
-            possiblex = random.randint(103,size-1)
-            possibley = random.randint(0,size-1)
-        #possiblex = int(possiblex)
-        #possibley = int(possibley)
-        #print(newcell.colour)
-        celllist.append([possiblex,possibley,newcell])#IMPORTANT LIST
-        collision[possibley][possiblex] = newcell
+        cellist.append(newcell)
         idcounter +=1
+for i in range(len(celllist)):#generate cells
+    possiblex = random.randint(spawnboundaries[0],spawnboundaries[2])
+    possibley = random.randint(spawnboundaries[1],spawnboundaries[3])
+    while not collision[possibley][possiblex] == 0:
+        possiblex = random.randint(spawnboundaries[0],spawnboundaries[2])
+        possibley = random.randint(spawnboundaries[1],spawnboundaries[3])
+    #possiblex = int(possiblex)
+    #possibley = int(possibley)
+    #print(newcell.colour)
+    celllist.append([possiblex,possibley,newcell])#IMPORTANT LIST
+    collision[possibley][possiblex] = newcell
 if False:
     neurons = []
     for i in range(numgenomes+1):
@@ -126,7 +132,6 @@ if False:
         neurons[i.target] = neurons[i.source]*i.weight
     print(neurons)
 #STARTING GENERATION PART
-print(collision[4])
 def onegeneration(celllist): #wdyt
     global collision
     for timestep in range(time_steps):# run for n number generations
@@ -174,57 +179,39 @@ def onegeneration(celllist): #wdyt
     #DEFINE SURVIVAL CONDITION HERE REMEMBER THAT COORD DOESNT MATTER AFTERWARDS041791
     # if the xposition is lesser than 15 survive and continue
     #reset collision here while celllist is definite along with aboth
-    
-
     survived = survivalCondition(celllist,collision)
-
-
     return survived
 highscore = 0
 fit = []
+for i in range(100):#generate cells
+    color = "%06x" % random.randint(0, 0xFFFFFF)
+    newcell = cell(idcounter,"#"+color)
+    fit.append(newcell)
 for i in range(version,version + 15000):#Number of generations duh
 
     if i%1 == 0:
         print("generation",i)
-    
-    
-    if i ==0:
-        oldsurvived = []
-        for k in celllist:
-            oldsurvived.append(k[2])
-    dicc = {}
-    for j in collision:
-        for k in j:
-            temp = type(k)
-            if temp not in dicc.keys():
-                dicc[temp] = 1
-            else:
-                dicc[temp] += 1
-    print(dicc)
-    for j in celllist:
-        if j[0]<103:
-            print(j)
+    # Presumably some sanity check
+    # dicc = {}
+    # for j in collision:
+    #     for k in j:
+    #         temp = type(k)
+    #         if temp not in dicc.keys():
+    #             dicc[temp] = 1
+    #         else:
+    #             dicc[temp] += 1
+    # print(dicc)
     savefile = copy.copy(celllist)
     survived = onegeneration(celllist)
     highscore = max(highscore,len(survived))
     for j in survived:
         fit.append(j)
-    while len(fit)>50:
-        fit.pop(0)
+    fit = fit[len(fit)-100:]
     if highscore == len(survived) :
-        print("lensurvived",len(survived),"highest",highscore)
+        print("lensurvived",len(savefile),"highest",highscore)
         with open(filesavename+"high"+str(i), 'wb') as f:
             pickle.dump(savefile, f)
-    
-    elif i%10041791 == 0:
-        print("lensurvived",len(survived),"highest",highscore)
-        with open(filesavename+str(i), 'wb') as f:
-            pickle.dump(savefile, f)
-    while len(survived) < 10:
-        survived.append(copy.copy(random.choice(fit)))
-    collision
     celllist = []
-    
     collision = []
     #REMAKE the walls
     mapp = open(barriername)
@@ -234,18 +221,21 @@ for i in range(version,version + 15000):#Number of generations duh
         collision.append(copy.copy(mappreadline))
     mapp.close()
     id = 0
-    for j in range(300):#size of subsequent generations
-        newcell = copy.copy(random.choice(survived))
-        if random.randint(0,100)<4:
+    for j in range(numberCells):#size of subsequent generations
+        if random.random()<chanceFresh:
+            color = "%06x" % random.randint(0, 0xFFFFFF)
+            newcell = cell(idcounter,"#"+color)
+            idcounter +=1
+        else:
+            newcell = copy.copy(random.choice(fit))
+        if random.randint(0,100)<30:
             newcell = newcell.mutation()
         if True:
-            possiblex = random.randint(103,size-1)
-            possibley = random.randint(0,size-1)
+            possiblex = random.randint(spawnboundaries[0],spawnboundaries[2])
+            possibley = random.randint(spawnboundaries[1],spawnboundaries[3])
             while not collision[possibley][possiblex] == 0:
-                possiblex = random.randint(103,size-1)
-                possibley = random.randint(0,size-1)
-        #possiblex = int(possiblex)
-        #possibley = int(possibley)
+                possiblex = random.randint(spawnboundaries[0],spawnboundaries[2])
+                possibley = random.randint(spawnboundaries[1],spawnboundaries[3])
         celllist.append([possiblex,possibley,newcell])#IMPORTANT LIST
         collision[possibley][possiblex] = newcell
     
