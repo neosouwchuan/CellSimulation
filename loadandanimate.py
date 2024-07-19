@@ -6,9 +6,10 @@ from genomedefineradv import *
 import pickle
 #Basic one cell movement plotted outputs
 size    = 128
-time_steps = 192
-spawnboundaries = [103,0,size-1,size-1]#topleft,then btm right [103,0,size-1,size-1]
-savename = "curvebarrier/curvenewver0high6"
+time_steps = 256
+spawnboundaries = [103,64,size-1,size-1]#topleft,then btm right [103,0,size-1,size-1]
+savename = "curvebarrier/curvenewver0high7"
+regeneratePosition = True
 def cellmove(x,y,uniquecell,timestep):#CELLMOVE CANNOT BE MOVED TO GENOME BECAUSE COLLISION NOT DEFINED THERE
     
     changex = 0
@@ -89,15 +90,18 @@ for mappcounter in range(128):#represents line counter
 #HERE LOADS GENERATION#8000 works
 with open(savename, "rb") as f:
     celllist = pickle.load(f)
-    for i in celllist:
-        possiblex = random.randint(spawnboundaries[0],spawnboundaries[2])
-        possibley = random.randint(spawnboundaries[1],spawnboundaries[3])
-        while not collision[possibley][possiblex] == 0:
+    for i in range(len(celllist)):
+        if regeneratePosition:
             possiblex = random.randint(spawnboundaries[0],spawnboundaries[2])
             possibley = random.randint(spawnboundaries[1],spawnboundaries[3])
-        collision[possibley][possiblex] = i[2]
-        i[0] = possiblex
-        i[1] = possibley
+            while not collision[possibley][possiblex] == 0:
+                possiblex = random.randint(spawnboundaries[0],spawnboundaries[2])
+                possibley = random.randint(spawnboundaries[1],spawnboundaries[3])
+            collision[possibley][possiblex] = celllist[i][2]
+            celllist[i][0] = possiblex
+            celllist[i][1] = possibley
+        else:
+            collision[celllist[i][1]][celllist[i][0]] = celllist[i][2]
 if False: 
     neurons = []
     for i in range(numgenomes+1):

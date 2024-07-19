@@ -9,12 +9,12 @@ filesavename = "curvebarrier/curvenewver0"#the map file must have at least one e
 barriername = "curvebarrier.map"
 version = 0
 loadfromfile = False
-time_steps = 192
+time_steps = 256
 size = 128
 numberCells = 300
 survivedQueue = 100
 chanceFresh = .1
-spawnboundaries = [103,0,size-1,size-1]#topleft,then btm right [103,0,size-1,size-1]
+spawnboundaries = [103,64,size-1,size-1]#topleft,then btm right [103,0,size-1,size-1]
 def printoutcollision(collision):
     for i in collision:
         for j in i:
@@ -106,23 +106,19 @@ if loadfromfile:#LOAD INSTEAD OF GENERATE
     with open(filesavename + str(version), "rb") as f:
         celllist = pickle.load(f)
 else:
-    cellist = []
-    for i in range(numberCells):#generate cells
+    for i in range(len(celllist)):#generate cells
         color = "%06x" % random.randint(0, 0xFFFFFF)
         newcell = cell(idcounter,"#"+color)
-        cellist.append(newcell)
-        idcounter +=1
-for i in range(len(celllist)):#generate cells
-    possiblex = random.randint(spawnboundaries[0],spawnboundaries[2])
-    possibley = random.randint(spawnboundaries[1],spawnboundaries[3])
-    while not collision[possibley][possiblex] == 0:
         possiblex = random.randint(spawnboundaries[0],spawnboundaries[2])
         possibley = random.randint(spawnboundaries[1],spawnboundaries[3])
-    #possiblex = int(possiblex)
-    #possibley = int(possibley)
-    #print(newcell.colour)
-    celllist.append([possiblex,possibley,newcell])#IMPORTANT LIST
-    collision[possibley][possiblex] = newcell
+        while not collision[possibley][possiblex] == 0:
+            possiblex = random.randint(spawnboundaries[0],spawnboundaries[2])
+            possibley = random.randint(spawnboundaries[1],spawnboundaries[3])
+        #possiblex = int(possiblex)
+        #possibley = int(possibley)
+        #print(newcell.colour)
+        celllist.append([possiblex,possibley,newcell])#IMPORTANT LIST
+        collision[possibley][possiblex] = newcell
 if False:
     neurons = []
     for i in range(numgenomes+1):
@@ -188,18 +184,6 @@ for i in range(100):#generate cells
     newcell = cell(idcounter,"#"+color)
     fit.append(newcell)
 for i in range(version,version + 15000):#Number of generations duh
-
-
-    # Presumably some sanity check
-    # dicc = {}
-    # for j in collision:
-    #     for k in j:
-    #         temp = type(k)
-    #         if temp not in dicc.keys():
-    #             dicc[temp] = 1
-    #         else:
-    #             dicc[temp] += 1
-    # print(dicc)
     savefile = copy.copy(celllist)
     survived = onegeneration(celllist)
     if i%1 == 0:
