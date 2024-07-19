@@ -8,7 +8,7 @@ import pickle
 size    = 128
 time_steps = 192
 spawnboundaries = [103,0,size-1,size-1]#topleft,then btm right [103,0,size-1,size-1]
-savename = "curvebarrier/curvenewver0high185"
+savename = "curvebarrier/curvenewver0high6"
 def cellmove(x,y,uniquecell,timestep):#CELLMOVE CANNOT BE MOVED TO GENOME BECAUSE COLLISION NOT DEFINED THERE
     
     changex = 0

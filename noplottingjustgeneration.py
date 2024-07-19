@@ -29,7 +29,7 @@ def survivalCondition(celllist,collision):
     for i in range(len(celllist)):  
         collision[celllist[i][1]][celllist[i][0]] = 0
         if(celllist[i][0]<25):# and (celllist[i][1]<64):
-            survived.append(celllist[i][2])
+            survived.append(copy.copy(celllist[i][2]))
     return survived
 
 def cellmove(x,y,uniquecell,timestep):#CELLMOVE CANNOT BE MOVED TO GENOME BECAUSE COLLISION NOT DEFINED THERE
@@ -189,8 +189,7 @@ for i in range(100):#generate cells
     fit.append(newcell)
 for i in range(version,version + 15000):#Number of generations duh
 
-    if i%1 == 0:
-        print("generation",i)
+
     # Presumably some sanity check
     # dicc = {}
     # for j in collision:
@@ -203,6 +202,8 @@ for i in range(version,version + 15000):#Number of generations duh
     # print(dicc)
     savefile = copy.copy(celllist)
     survived = onegeneration(celllist)
+    if i%1 == 0:
+        print("generation",i,len(survived))
     highscore = max(highscore,len(survived))
     for j in survived:
         fit.append(j)
