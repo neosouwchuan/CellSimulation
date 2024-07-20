@@ -6,7 +6,7 @@ import pickle
 from genomedefineradv import *
 import copy
 filesavename = "curvebarrier/curvenewver0"#the map file must have at least one extra empty line
-barriername = "curvebarrier.map"
+barriername = "curve2.map"
 version = 0
 loadfromfile = False
 time_steps = 256
